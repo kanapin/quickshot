@@ -30,4 +30,6 @@ proguard/
 # Mac OS files
 .DS_Store
 
-
+android/.settings/org.eclipse.jdt.core.prefs
+android/project.properties
+android/proguard-project.txt

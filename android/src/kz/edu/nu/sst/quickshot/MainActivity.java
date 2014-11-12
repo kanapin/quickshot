@@ -52,9 +52,6 @@ public class MainActivity extends Activity {
         
         image = Bitmap.createBitmap(600, 800, Config.ARGB_4444);
         imageView.setImageBitmap(image);
-        
-        
-        
          
         imageButton.setOnClickListener(new View.OnClickListener() {
 			@Override
