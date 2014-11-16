@@ -23,7 +23,7 @@ public class ObjectRecognizer implements Runnable {
 	Bitmap scene;
 	Bitmap object;
 	Bitmap image;
-
+	
 	public ObjectRecognizer(Bitmap _object, Bitmap _scene, Bitmap _image) {
 		scene = _scene;
 		object = _object;
@@ -130,7 +130,7 @@ public class ObjectRecognizer implements Runnable {
         
         drawQonMat(scene_corners, sceneMat, CvScalar.CYAN);
         
-        scene = Bitmap.createBitmap(sceneMat.cols(), sceneMat.rows(), Config.ARGB_8888);
+        scene = Bitmap.createBitmap(sceneMat.cols(), sceneMat.rows(), Config.ARGB_4444);
         
 		
         IplImage sceneImage = sceneMat.asIplImage();
