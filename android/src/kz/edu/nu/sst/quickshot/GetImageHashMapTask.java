@@ -5,39 +5,33 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import android.location.Location;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.os.AsyncTask;
-import android.util.Log;
 
 public class GetImageHashMapTask extends AsyncTask<Void, Void, Void> {
 
 	Location location;
-	HashMap<Bitmap, String> photosMap;
 
 	GetImageHashMapTask(Location loc) {
 		location = loc;
-		photosMap = new HashMap<Bitmap, String>();
 	}
 
 	protected Void doInBackground(Void... arg0) {
 		PlacesService service = new PlacesService();
 		ArrayList<String> placeReferences = service.fetchReferences(location);
-
 		ArrayList<Place> placesList = new ArrayList<Place>();
-		System.out.println("doInBackground");
 		if (!placeReferences.isEmpty())
 			for (String ref : placeReferences) {
-				Log.d("zQuickShot", ref);
-				placesList.add(service.getPlace(ref));
-				// if (p.getPhotos() != null)
-				// for (Photo photo : p.getPhotos()) {
-				// new ImageDownloadTask(photo.getPhotoReference(),
-				// p.getId()).execute();
-				// }
+				Place place = service.getPlace(ref);
+				placesList.add(place);
+				if (place.getPhotos() != null)
+					for (Photo photo : place.getPhotos()) {
+						new ImageDownloadTask(photo.getPhotoReference(),
+								place.getReference()).execute();
+					}
 			}
 		return null;
 	}
@@ -46,16 +40,15 @@ public class GetImageHashMapTask extends AsyncTask<Void, Void, Void> {
 		Bitmap bitmap = null;
 
 		String reference;
-		String placeID;
+		String placeReference;
 
-		ImageDownloadTask(String reference, String placeID) {
+		ImageDownloadTask(String reference, String placeReference) {
 			this.reference = reference;
-			this.placeID = placeID;
+			this.placeReference = placeReference;
 		}
 
 		@Override
 		protected Bitmap doInBackground(Void... params) {
-			System.out.println("started image task...");
 			String url = "https://maps.googleapis.com/maps/api/place/photo?";
 			String key = "key=AIzaSyA8bWy_dU5tOxzazJzPw7bhzIGzWqUsm9E";
 			String sensor = "sensor=true";
@@ -73,8 +66,7 @@ public class GetImageHashMapTask extends AsyncTask<Void, Void, Void> {
 
 		@Override
 		protected void onPostExecute(Bitmap result) {
-			photosMap.put(bitmap, placeID);
-			// imageView.setImageBitmap(bitmap);
+			MainActivity.photosMap.put(placeReference, bitmap);
 		}
 
 		Bitmap downloadImage(String strUrl) throws IOException {

@@ -84,19 +84,19 @@ public class PlacesService {
 
 		try {
 			if (!object.isNull("result")) {
+				JSONObject res = object.getJSONObject("result");
 
-				if (!object.getJSONObject("result").isNull("name"))
+				if (!res.isNull("name"))
 					place.setName(object.getJSONObject("result").getString(
 							"name"));
 
-				if (!object.getJSONObject("result").isNull("reference"))
+				if (!res.isNull("reference"))
 					place.setName(object.getJSONObject("result").getString(
 							"reference"));
 
-				if (!object.getJSONObject("result").isNull("photos")) {
+				if (!res.isNull("photos")) {
 
-					JSONArray photos = object.getJSONObject("result")
-							.getJSONArray("photos");
+					JSONArray photos = res.getJSONArray("photos");
 					place.setPhotos(new Photo[photos.length()]);
 					for (int i = 0; i < photos.length(); i++) {
 						place.getPhotos()[i] = new Photo();
@@ -116,12 +116,10 @@ public class PlacesService {
 						}
 					}
 				}
-				if (!object.getJSONObject("result").isNull("geometry")) {
-					place.setLatitude(Double.parseDouble(object
-							.getJSONObject("result").getJSONObject("geometry")
+				if (!res.isNull("geometry")) {
+					place.setLatitude(Double.parseDouble(res.getJSONObject("geometry")
 							.getJSONObject("location").getString("lat")));
-					place.setLongitude(Double.parseDouble(object
-							.getJSONObject("result").getJSONObject("geometry")
+					place.setLongitude(Double.parseDouble(res.getJSONObject("geometry")
 							.getJSONObject("location").getString("lng")));
 				}
 			}
@@ -134,8 +132,7 @@ public class PlacesService {
 	}
 
 	public ArrayList<String> fetchReferences(Location location) {
-		Log.d("zQuickShot", "FETCHING REFERENCES!!!!!!!!!!!!");
-
+		
 		StringBuilder urlString = new StringBuilder(
 				"https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
 		urlString.append("&location=");

@@ -2,10 +2,6 @@ package kz.edu.nu.sst.quickshot;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.app.Activity;
@@ -19,7 +15,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -35,7 +30,7 @@ public class MainActivity extends Activity {
 
 	private LocationManager locationManager;
 	private Location loc;
-	private HashMap<Bitmap, String> photosMap = new HashMap<Bitmap, String>();
+	public static HashMap<String, Bitmap> photosMap = new HashMap<String, Bitmap>();
 	private GetImageHashMapTask getImagesTask;
 
 	protected static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE_1 = 100;
@@ -59,7 +54,6 @@ public class MainActivity extends Activity {
 		getImagesTask = new GetImageHashMapTask(loc);
 		getImagesTask.execute();
 
-		
 		image1Button = new Button(this);
 		image1Button.setText("Shot an object");
 
