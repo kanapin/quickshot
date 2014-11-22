@@ -1,7 +1,6 @@
 package kz.edu.nu.sst.quickshot;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -10,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -38,7 +36,7 @@ public class MainActivity extends Activity {
 	private LocationManager locationManager;
 	private Location loc;
 	private HashMap<Bitmap, String> photosMap = new HashMap<Bitmap, String>();
-	private GetPlacesTask getPlacesTask;
+	private GetImageHashMapTask getImagesTask;
 
 	protected static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE_1 = 100;
 	protected static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE_2 = 101;
@@ -57,11 +55,11 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		/*
-		 * findCurrLocation(); getPlacesTask = new GetPlacesTask();
-		 * getPlacesTask.execute();
-		 */
+		findCurrLocation();
+		getImagesTask = new GetImageHashMapTask(loc);
+		getImagesTask.execute();
 
+		
 		image1Button = new Button(this);
 		image1Button.setText("Shot an object");
 
@@ -125,11 +123,12 @@ public class MainActivity extends Activity {
 			public void onClick(View v) {
 				if (image1 != null && image2 != null) {
 					imageView.setImageBitmap(image);
-					ObjectRecognitionTask task = new ObjectRecognitionTask(imageView);
+					ObjectRecognitionTask task = new ObjectRecognitionTask(
+							imageView);
 					task.execute(image1, image2);
-//					ObjectRecognizer detector = new ObjectRecognizer(image1,
-//							image2, image);
-//					new Thread(detector).start();
+					// ObjectRecognizer detector = new ObjectRecognizer(image1,
+					// image2, image);
+					// new Thread(detector).start();
 				}
 			}
 		});
@@ -189,92 +188,16 @@ public class MainActivity extends Activity {
 		} else if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE_2
 				&& resultCode == RESULT_OK) {
 
-			//this.getContentResolver().notifyChange(mImageUri2, null);
-			//ContentResolver cr = this.getContentResolver();
+			// this.getContentResolver().notifyChange(mImageUri2, null);
+			// ContentResolver cr = this.getContentResolver();
 			Bitmap photo;
 			photo = decodeSampledBitmapFromFile(mImageUri2.getPath(), 480, 640);
-			Log.d("MAIN", "w,h = " + photo.getWidth() + " ," + photo.getHeight());
+			Log.d("MAIN",
+					"w,h = " + photo.getWidth() + " ," + photo.getHeight());
 			image2 = photo;
 			imageView.setImageBitmap(photo);
 			Log.d("MAIN", "Successfully made imageView");
 
-		}
-	}
-
-	private class GetPlacesTask extends AsyncTask<Void, Void, Void> {
-
-		protected Void doInBackground(Void... arg0) {
-			PlacesService service = new PlacesService();
-
-			if (loc == null) {
-				System.out.println("loc is null!!");
-			}
-
-			ArrayList<Place> placesList = service.findPlaces(loc.getLatitude(),
-					loc.getLongitude());
-			if (placesList != null)
-				for (Place p : placesList) {
-					if (p.getPhotos() != null)
-						for (Photo photo : p.getPhotos()) {
-							new ImageDownloadTask(photo.getPhotoReference(),
-									p.getId()).execute();
-						}
-				}
-			return null;
-		}
-	}
-
-	private class ImageDownloadTask extends AsyncTask<Void, Integer, Bitmap> {
-		Bitmap bitmap = null;
-
-		String reference;
-		String placeID;
-
-		public ImageDownloadTask(String reference, String placeID) {
-			this.reference = reference;
-			this.placeID = placeID;
-		}
-
-		@Override
-		protected Bitmap doInBackground(Void... params) {
-			System.out.println("started image task...");
-			String url = "https://maps.googleapis.com/maps/api/place/photo?";
-			String key = "key=AIzaSyA8bWy_dU5tOxzazJzPw7bhzIGzWqUsm9E";
-			String sensor = "sensor=true";
-			String maxWidth = "maxwidth=600";
-			String maxHeight = "maxheight=400";
-			url = url + "&" + key + "&" + sensor + "&" + maxWidth + "&"
-					+ maxHeight;
-			url = url + "&photoreference=" + reference;
-			try {
-				bitmap = downloadImage(url);
-			} catch (Exception e) {
-			}
-			return bitmap;
-		}
-
-		@Override
-		protected void onPostExecute(Bitmap result) {
-			photosMap.put(bitmap, placeID);
-			// imageView.setImageBitmap(bitmap);
-		}
-
-		Bitmap downloadImage(String strUrl) throws IOException {
-			Bitmap bitmap = null;
-			InputStream inputStream = null;
-			try {
-				URL url = new URL(strUrl);
-
-				HttpURLConnection urlConnection = (HttpURLConnection) url
-						.openConnection();
-				urlConnection.connect();
-				inputStream = urlConnection.getInputStream();
-				bitmap = BitmapFactory.decodeStream(inputStream);
-			} catch (Exception e) {
-			} finally {
-				inputStream.close();
-			}
-			return bitmap;
 		}
 	}
 

@@ -10,6 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.location.Location;
 import android.util.Log;
 
 public class PlacesService {
@@ -19,9 +20,9 @@ public class PlacesService {
 	public PlacesService() {
 	}
 
-	public ArrayList<Place> findPlaces(double latitude, double longitude) {
+	public ArrayList<Place> findPlaces(Location location) {
 
-		String link = makeUrl(latitude, longitude);
+		String link = makeUrl(location.getLatitude(), location.getLongitude());
 
 		try {
 			String json = getJSON(link);
@@ -33,7 +34,7 @@ public class PlacesService {
 			ArrayList<Place> arrayList = new ArrayList<Place>();
 
 			for (int i = 0; i < array.length(); i++) {
-				Place place = getPlace((JSONObject) array.get(i));
+				Place place = getPlaceFromJSON((JSONObject) array.get(i));
 				arrayList.add(place);
 			}
 			return arrayList;
@@ -77,7 +78,7 @@ public class PlacesService {
 		return content.toString();
 	}
 
-	public Place getPlace(JSONObject object) {
+	public Place getPlaceFromJSON(JSONObject object) {
 
 		Place place = new Place();
 
@@ -90,7 +91,7 @@ public class PlacesService {
 
 			if (!object.isNull("reference"))
 				place.setReference(object.getString("reference"));
-				
+
 			if (!object.isNull("photos")) {
 				JSONArray photos = object.getJSONArray("photos");
 				place.setPhotos(new Photo[photos.length()]);
@@ -124,6 +125,71 @@ public class PlacesService {
 			e.printStackTrace();
 			Log.d("EXCEPTION", e.toString());
 		}
+		return place;
+	}
+
+	public ArrayList<String> fetchReferences(Location location) {
+		Log.d("zQuickShot", "FETCHING REFERENCES!!!!!!!!!!!!");
+
+		StringBuilder urlString = new StringBuilder(
+				"https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+		urlString.append("&location=");
+		urlString.append(Double.toString(location.getLatitude()));
+		urlString.append(",");
+		urlString.append(Double.toString(location.getLongitude()));
+		urlString.append("&radius=500");
+		urlString.append("&sensor=true&key=" + API_KEY);
+		urlString.toString();
+
+		String link = urlString.toString();
+		String json = getJSON(link);
+
+		JSONObject object = null;
+		JSONArray array = null;
+		try {
+			object = new JSONObject(json);
+			array = object.getJSONArray("results");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		ArrayList<String> referencesList = new ArrayList<String>();
+		for (int i = 0; i < array.length(); i++) {
+			Log.d("zQuickShot", "IN FOR LOOP");
+
+			try {
+				JSONObject obj = (JSONObject) array.get(i);
+				if (!obj.isNull("reference")) {
+					Log.d("zQuickShot",
+							"REFERENCE: " + object.getString("reference"));
+					referencesList.add(obj.getString("reference"));
+				}
+			} catch (JSONException e1) {
+				e1.printStackTrace();
+			}
+		}
+		return referencesList;
+	}
+
+	public Place getPlace(String ref) {
+		System.out.println("GET PLACE!!!!!!!!!!!!!!");
+		StringBuilder urlString = new StringBuilder(
+				"https://maps.googleapis.com/maps/api/place/details/json?reference=");
+		urlString.append(ref);
+		urlString.append("&sensor=true&key=" + API_KEY);
+		String link = urlString.toString();
+
+		String json = getJSON(link);
+
+		JSONObject object = null;
+
+		try {
+			object = new JSONObject(json);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		Place place = getPlaceFromJSON(object);
+
 		return place;
 	}
 
