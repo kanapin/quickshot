@@ -8,6 +8,8 @@ public class Place {
 	private String vicinity;
 	private Double latitude;
 	private Double longitude;
+	private String reference;
+	
 	private Photo photos[];
 
 	public Photo[] getPhotos() {
@@ -18,6 +20,14 @@ public class Place {
 		this.photos = photos;
 	}
 
+	public String getReference() {
+		return reference;
+	}
+
+	public void setReference(String reference) {
+		this.reference = reference;
+	}
+	
 	public String getId() {
 		return id;
 	}

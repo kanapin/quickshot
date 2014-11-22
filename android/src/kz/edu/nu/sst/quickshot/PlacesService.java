@@ -46,14 +46,14 @@ public class PlacesService {
 
 	private String makeUrl(double latitude, double longitude) {
 		StringBuilder urlString = new StringBuilder(
-				"https://maps.googleapis.com/maps/api/place/search/json?");
+				"https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
 
 		urlString.append("&location=");
 		urlString.append(Double.toString(latitude));
 		urlString.append(",");
 		urlString.append(Double.toString(longitude));
 		urlString.append("&radius=500");
-		urlString.append("&sensor=false&key=" + API_KEY);
+		urlString.append("&sensor=true&key=" + API_KEY);
 
 		return urlString.toString();
 	}
@@ -88,6 +88,9 @@ public class PlacesService {
 			if (!object.isNull("vicinity"))
 				place.setVicinity(object.getString("vicinity"));
 
+			if (!object.isNull("reference"))
+				place.setReference(object.getString("reference"));
+				
 			if (!object.isNull("photos")) {
 				JSONArray photos = object.getJSONArray("photos");
 				place.setPhotos(new Photo[photos.length()]);
