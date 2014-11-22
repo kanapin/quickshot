@@ -4,8 +4,7 @@ package kz.edu.nu.sst.quickshot;
 public class Place {
 	private String id;
 	private String icon;
-	private String name;
-	private String vicinity;
+	private String name;	
 	private Double latitude;
 	private Double longitude;
 	private String reference;
@@ -68,13 +67,6 @@ public class Place {
 		this.name = name;
 	}
 
-	public String getVicinity() {
-		return vicinity;
-	}
-
-	public void setVicinity(String vicinity) {
-		this.vicinity = vicinity;
-	}
 
 	// static Place getPlace(JSONObject object) {
 	// try {

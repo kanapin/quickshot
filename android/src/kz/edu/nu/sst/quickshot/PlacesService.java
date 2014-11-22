@@ -83,43 +83,48 @@ public class PlacesService {
 		Place place = new Place();
 
 		try {
-			if (!object.isNull("name"))
-				place.setName(object.getString("name"));
+			if (!object.isNull("result")) {
 
-			if (!object.isNull("vicinity"))
-				place.setVicinity(object.getString("vicinity"));
+				if (!object.getJSONObject("result").isNull("name"))
+					place.setName(object.getJSONObject("result").getString(
+							"name"));
 
-			if (!object.isNull("reference"))
-				place.setReference(object.getString("reference"));
+				if (!object.getJSONObject("result").isNull("reference"))
+					place.setName(object.getJSONObject("result").getString(
+							"reference"));
 
-			if (!object.isNull("photos")) {
-				JSONArray photos = object.getJSONArray("photos");
-				place.setPhotos(new Photo[photos.length()]);
-				for (int i = 0; i < photos.length(); i++) {
-					place.getPhotos()[i] = new Photo();
-					place.getPhotos()[i].width = ((JSONObject) photos.get(i))
-							.getInt("width");
-					place.getPhotos()[i].height = ((JSONObject) photos.get(i))
-							.getInt("height");
-					place.getPhotos()[i].photoReference = ((JSONObject) photos
-							.get(i)).getString("photo_reference");
-					JSONArray attributions = ((JSONObject) photos.get(i))
-							.getJSONArray("html_attributions");
-					place.getPhotos()[i].attributions = new String[attributions
-							.length()];
-					for (int j = 0; j < attributions.length(); j++) {
-						place.getPhotos()[i].attributions[j] = attributions
-								.getString(j);
+				if (!object.getJSONObject("result").isNull("photos")) {
+
+					JSONArray photos = object.getJSONObject("result")
+							.getJSONArray("photos");
+					place.setPhotos(new Photo[photos.length()]);
+					for (int i = 0; i < photos.length(); i++) {
+						place.getPhotos()[i] = new Photo();
+						place.getPhotos()[i].width = ((JSONObject) photos
+								.get(i)).getInt("width");
+						place.getPhotos()[i].height = ((JSONObject) photos
+								.get(i)).getInt("height");
+						place.getPhotos()[i].photoReference = ((JSONObject) photos
+								.get(i)).getString("photo_reference");
+						JSONArray attributions = ((JSONObject) photos.get(i))
+								.getJSONArray("html_attributions");
+						place.getPhotos()[i].attributions = new String[attributions
+								.length()];
+						for (int j = 0; j < attributions.length(); j++) {
+							place.getPhotos()[i].attributions[j] = attributions
+									.getString(j);
+						}
 					}
 				}
+				if (!object.getJSONObject("result").isNull("geometry")) {
+					place.setLatitude(Double.parseDouble(object
+							.getJSONObject("result").getJSONObject("geometry")
+							.getJSONObject("location").getString("lat")));
+					place.setLongitude(Double.parseDouble(object
+							.getJSONObject("result").getJSONObject("geometry")
+							.getJSONObject("location").getString("lng")));
+				}
 			}
-
-			place.setLatitude(Double.parseDouble(object
-					.getJSONObject("geometry").getJSONObject("location")
-					.getString("lat")));
-			place.setLongitude(Double.parseDouble(object
-					.getJSONObject("geometry").getJSONObject("location")
-					.getString("lng")));
 
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -143,52 +148,39 @@ public class PlacesService {
 
 		String link = urlString.toString();
 		String json = getJSON(link);
-
-		JSONObject object = null;
-		JSONArray array = null;
+		ArrayList<String> referencesList = new ArrayList<String>();
 		try {
-			object = new JSONObject(json);
-			array = object.getJSONArray("results");
+			JSONObject object = new JSONObject(json);
+			JSONArray array = object.getJSONArray("results");
+			for (int i = 0; i < array.length(); i++) {
+				JSONObject obj = (JSONObject) array.get(i);
+				if (!obj.isNull("reference"))
+					referencesList.add(obj.getString("reference"));
+			}
 		} catch (JSONException e) {
 			e.printStackTrace();
-		}
-
-		ArrayList<String> referencesList = new ArrayList<String>();
-		for (int i = 0; i < array.length(); i++) {
-			Log.d("zQuickShot", "IN FOR LOOP");
-
-			try {
-				JSONObject obj = (JSONObject) array.get(i);
-				if (!obj.isNull("reference")) {
-					Log.d("zQuickShot",
-							"REFERENCE: " + object.getString("reference"));
-					referencesList.add(obj.getString("reference"));
-				}
-			} catch (JSONException e1) {
-				e1.printStackTrace();
-			}
 		}
 		return referencesList;
 	}
 
 	public Place getPlace(String ref) {
-		System.out.println("GET PLACE!!!!!!!!!!!!!!");
+
 		StringBuilder urlString = new StringBuilder(
 				"https://maps.googleapis.com/maps/api/place/details/json?reference=");
 		urlString.append(ref);
 		urlString.append("&sensor=true&key=" + API_KEY);
 		String link = urlString.toString();
-
 		String json = getJSON(link);
-
-		JSONObject object = null;
+		// System.out.println(json);
+		Place place = null;
 
 		try {
-			object = new JSONObject(json);
+			JSONObject object = new JSONObject(json);
+			place = getPlaceFromJSON(object);
+
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		Place place = getPlaceFromJSON(object);
 
 		return place;
 	}

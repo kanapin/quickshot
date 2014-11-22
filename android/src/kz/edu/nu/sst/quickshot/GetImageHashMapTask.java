@@ -7,8 +7,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.json.JSONException;
-
 import android.location.Location;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -30,6 +28,7 @@ public class GetImageHashMapTask extends AsyncTask<Void, Void, Void> {
 		ArrayList<String> placeReferences = service.fetchReferences(location);
 
 		ArrayList<Place> placesList = new ArrayList<Place>();
+		System.out.println("doInBackground");
 		if (!placeReferences.isEmpty())
 			for (String ref : placeReferences) {
 				Log.d("zQuickShot", ref);
