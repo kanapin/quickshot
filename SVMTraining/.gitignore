@@ -1,6 +1,7 @@
 /bin
 /CMakeFiles
 /images
+/test-images
 CMakeCache.txt
 Makefile
 cmake_install.cmake
