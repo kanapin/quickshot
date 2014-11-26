@@ -10,7 +10,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.location.Location;
 import android.util.Log;
 
 public class PlacesService {
@@ -20,9 +19,9 @@ public class PlacesService {
 	public PlacesService() {
 	}
 
-	public ArrayList<Place> findPlaces(Location location) {
+	public ArrayList<Place> findPlaces(double lat, double lon) {
 
-		String link = makeUrl(location.getLatitude(), location.getLongitude());
+		String link = makeUrl(lat, lon);
 
 		try {
 			String json = getJSON(link);
@@ -53,7 +52,7 @@ public class PlacesService {
 		urlString.append(Double.toString(latitude));
 		urlString.append(",");
 		urlString.append(Double.toString(longitude));
-		urlString.append("&radius=500");
+		urlString.append("&radius=1000");
 		urlString.append("&sensor=true&key=" + API_KEY);
 
 		return urlString.toString();
@@ -131,14 +130,14 @@ public class PlacesService {
 		return place;
 	}
 
-	public ArrayList<String> fetchReferences(Location location) {
+	public ArrayList<String> fetchReferences(double lat, double lon) {
 		
 		StringBuilder urlString = new StringBuilder(
 				"https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
 		urlString.append("&location=");
-		urlString.append(Double.toString(location.getLatitude()));
+		urlString.append(Double.toString(lat));
 		urlString.append(",");
-		urlString.append(Double.toString(location.getLongitude()));
+		urlString.append(Double.toString(lon));
 		urlString.append("&radius=500");
 		urlString.append("&sensor=true&key=" + API_KEY);
 		urlString.toString();

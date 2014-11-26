@@ -13,15 +13,18 @@ import android.os.AsyncTask;
 
 public class GetImageHashMapTask extends AsyncTask<Void, Void, Void> {
 
-	Location location;
+	double lat;// Location location;
+	double lon;
 
-	GetImageHashMapTask(Location loc) {
-		location = loc;
+	public GetImageHashMapTask(double lat, double lon) {
+		// location = loc;
+		this.lat = lat;
+		this.lon = lon;
 	}
 
 	protected Void doInBackground(Void... arg0) {
 		PlacesService service = new PlacesService();
-		ArrayList<String> placeReferences = service.fetchReferences(location);
+		ArrayList<String> placeReferences = service.fetchReferences(lat, lon);
 		ArrayList<Place> placesList = new ArrayList<Place>();
 		if (!placeReferences.isEmpty())
 			for (String ref : placeReferences) {
@@ -67,6 +70,7 @@ public class GetImageHashMapTask extends AsyncTask<Void, Void, Void> {
 		@Override
 		protected void onPostExecute(Bitmap result) {
 			MainActivity.photosMap.put(placeReference, bitmap);
+			// MainActivity.imageView.setImageBitmap(bitmap);
 		}
 
 		Bitmap downloadImage(String strUrl) throws IOException {
