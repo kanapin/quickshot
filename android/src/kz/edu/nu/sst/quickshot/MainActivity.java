@@ -2,6 +2,9 @@ package kz.edu.nu.sst.quickshot;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+
+import org.simpleframework.xml.core.Persister;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -80,6 +83,34 @@ public class MainActivity extends Activity {
 		// }
 		// }
 		// });
+
+		// Serializer serializer = new Persister();
+		// File source = new File("res/xml/data.xml");
+		// PlaceList placeList = null;
+		//
+		// try {
+		// placeList = serializer.read(PlaceList.class, source);
+		// } catch (Exception e) {
+		// e.printStackTrace();
+		// }
+		// Reader reader = new StringReader("res/xml/data.xml");
+		InputStream in = null;
+		try {
+			in = this.getAssets().open("data.xml");
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		Persister serializer = new Persister();
+		PlaceList placeList = null;
+		try {
+			placeList = serializer.read(PlaceList.class, in, false);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		for (Place p : placeList.getList()) {
+			System.out.println(p.getDescription());
+		}
 
 	}
 
