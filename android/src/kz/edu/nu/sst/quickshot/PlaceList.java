@@ -32,5 +32,4 @@ public class PlaceList {
 		this.name = name;
 	}
 
-	
 }

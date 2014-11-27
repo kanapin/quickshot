@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
@@ -32,6 +33,9 @@ public class MainActivity extends Activity {
 	Uri mImageUri1;
 
 	Bitmap image;
+
+	TextView tv;
+	PlaceList placeList = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -84,16 +88,6 @@ public class MainActivity extends Activity {
 		// }
 		// });
 
-		// Serializer serializer = new Persister();
-		// File source = new File("res/xml/data.xml");
-		// PlaceList placeList = null;
-		//
-		// try {
-		// placeList = serializer.read(PlaceList.class, source);
-		// } catch (Exception e) {
-		// e.printStackTrace();
-		// }
-		// Reader reader = new StringReader("res/xml/data.xml");
 		InputStream in = null;
 		try {
 			in = this.getAssets().open("data.xml");
@@ -101,15 +95,10 @@ public class MainActivity extends Activity {
 			e1.printStackTrace();
 		}
 		Persister serializer = new Persister();
-		PlaceList placeList = null;
 		try {
 			placeList = serializer.read(PlaceList.class, in, false);
 		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		for (Place p : placeList.getList()) {
-			System.out.println(p.getDescription());
+			e.printStackTrace();			
 		}
 
 	}
@@ -154,6 +143,11 @@ public class MainActivity extends Activity {
 			Log.d("RESULT", "Path = " + mImageUri1.getPath());
 			image1 = photo;
 			imageView.setImageBitmap(photo);
+			
+			/********** for testing purposes *************/
+			displayResults("shabyt");
+			/*********************************************/
+			
 			Log.d("MAIN", "Successfully made imageView");
 		}
 	}
@@ -199,4 +193,17 @@ public class MainActivity extends Activity {
 		return BitmapFactory.decodeFile(pathName, options);
 	}
 
+	public void displayResults(String id) {
+		Place place = null;
+
+		for (Place p : placeList.getList()) {
+			if (p.getId().equals(id)) {
+				place = p;
+				break;
+			}
+		}
+		tv = (TextView) findViewById(R.id.textView1);
+		if (place != null)
+			tv.setText(place.getDescription());
+	}
 }
