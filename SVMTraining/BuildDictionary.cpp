@@ -171,7 +171,7 @@ void buildVocabulary(string listFileName) {
     std::cout << "Saved a vocabulary to vocabulary.yml\n";
 }
 
-void testClassifiers() {
+void testClassifiers(string testImageListFileName) {
     Mat vocabulary;
     FileStorage fs("vocabulary.yml", FileStorage::READ);
     fs["vocabulary"] >> vocabulary;
@@ -188,8 +188,10 @@ void testClassifiers() {
     bowide.setVocabulary(vocabulary);
     
     
-    const int classNumber = 5;
-    std::string class_names[classNumber] = {"congresshall", "shabyt", "vokzal", "hanshatyr", "triumf"};
+    const int classNumber = 10;
+    std::string class_names[classNumber] = {"congresshall", "shabyt", "vokzal", "hanshatyr", "triumf",
+        "baiterek",		"pyramid",
+        "keruyen", "defence", "nu"};
     CvSVM classifiers[classNumber];
     for (int i = 0 ; i < classNumber ; i ++) {
         
@@ -200,10 +202,19 @@ void testClassifiers() {
     Mat input, response_hist, descriptor;
     std::vector<KeyPoint> keypoints;
     
-    while (std::cin >> testImageName) {
-        input = imread(testImageName.c_str(), CV_LOAD_IMAGE_GRAYSCALE);
+    std::fstream testImageListFile;
+    testImageListFile.open(testImageListFileName, std::fstream::in);
+    
+    int totalTestCases = 0, correct = 0;
+    
+    while (testImageListFile >> testImageName) {
+        
+        input = imread(("test-images/" + testImageName).c_str(), CV_LOAD_IMAGE_GRAYSCALE);
         
         std::cout << "Loaded " + testImageName << input.rows << " x " << input.cols << std::endl;
+        totalTestCases ++;
+        
+        string actualClassName = testImageName.substr(0, testImageName.find('_'));
         
         detector.detect(input, keypoints);
         std::cout << "Found " << keypoints.size() << " keypoints\n";
@@ -212,7 +223,7 @@ void testClassifiers() {
         bowide.compute(input, keypoints, response_hist);
         std::cout << "Response hist " << response_hist.cols << std::endl;
         
-        
+
         float minf = FLT_MAX;
         std::string bestMatch;
         for (int i = 0 ; i < classNumber ; i ++) {
@@ -222,14 +233,25 @@ void testClassifiers() {
                 bestMatch = class_names[i];
             }
         }
-        std::cout <<testImageName << " is " << bestMatch << std::endl;
+        std::cout << testImageName << " is " << bestMatch << std::endl;
+        if (actualClassName == bestMatch)
+            correct ++;
     }
-}
-int main() {
+    testImageListFile.close();
     
-    buildVocabulary("list2.txt");
-    trainImages("list2.txt");
-    testClassifiers();
+    std::cout << "Total: " << totalTestCases << ", correct: " << correct << "\n";
+    std::cout << "Accuracy: " << 1.0 * correct / totalTestCases << "\n";
+}
+int main(int argc, char* argv[]) {
+    
+    if (argc != 4) {
+        std::cout << "Usage: BuildVocabulary <files for vocabulary> <files for training> <files for testing>\n";
+        return 0;
+    }
+    
+    buildVocabulary(argv[1]);
+    trainImages(argv[2]);
+    testClassifiers(argv[3]);
     
     
     
