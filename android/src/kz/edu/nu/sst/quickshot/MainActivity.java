@@ -1,8 +1,11 @@
 package kz.edu.nu.sst.quickshot;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.simpleframework.xml.core.Persister;
 
@@ -31,11 +34,14 @@ public class MainActivity extends Activity {
 	ImageView imageView;
 	Bitmap image1;
 	Uri mImageUri1;
+	TextView textView;
 
 	Bitmap image;
 
 	TextView tv;
 	PlaceList placeList = null;
+
+	ObjectRecognitionTask task;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +74,77 @@ public class MainActivity extends Activity {
 
 			}
 		});
+		textView = (TextView) findViewById(R.id.textView1);
+		
+		String [] arr = new String [] {"congresshall.xml", "shabyt.xml", "vokzal.xml", "hanshatyr.xml", "triumf.xml",
+                "baiterek.xml",		"pyramid.xml",
+                "keruyen.xml", "defence.xml", "nuniversity.xml"};
+		byte[] buffer = new byte[1024];
+		
+		String pathToVocabulary = null;
+		InputStream inputStream ;
+		OutputStream outputStream = null ;
+		try {
+			inputStream = this.getAssets().open("vocabulary.yml");
+			File vocabularyFile = createTemproraryFile("vocabulary", "yml");
+			outputStream = new BufferedOutputStream(new FileOutputStream(vocabularyFile)); 
+			pathToVocabulary = vocabularyFile.getAbsolutePath();
+	        int length = 0;
+	        try {
+	            while ((length = inputStream.read(buffer)) > 0){
+	                outputStream.write(buffer, 0, length);
+	            }
+	        } catch (IOException ioe) {
+	            /* ignore */
+	        }
+			
+		} catch (IOException e2) {
+			e2.printStackTrace();
+		} finally {
+			if (outputStream != null) {
+				try {
+					outputStream.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		String [] classNames = new String [arr.length];
+		
+		for (int i = 0 ; i < arr.length ; i ++) {
+			Log.d("MainActivity", "i = " + i);
+			int length = 0;
+			try {
+				inputStream = getAssets().open(arr[i]);
+				classNames[i] = arr[i].substring(0, 
+						arr[i].indexOf('.'));
+				File currentFile = createTemproraryFile(classNames[i], "xml");
+				arr[i] = currentFile.getAbsolutePath();
+				outputStream = new BufferedOutputStream(new FileOutputStream(
+						currentFile));
+				while ((length = inputStream.read(buffer)) > 0) {
+					outputStream.write(buffer, 0, length);
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+				if (outputStream != null)
+					try {
+						outputStream.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			}
+			
+			
+		}
+		
+		task = new ObjectRecognitionTask(textView, pathToVocabulary, arr, classNames);
+		
 
 		// Button saveButton = new Button(this);
 		// saveButton.setText("Start detection!");
@@ -145,10 +222,10 @@ public class MainActivity extends Activity {
 			imageView.setImageBitmap(photo);
 			
 			/********** for testing purposes *************/
-			displayResults("shabyt");
+			//displayResults("shabyt");
 			/*********************************************/
+			task.execute(mImageUri1.getPath());
 			
-			Log.d("MAIN", "Successfully made imageView");
 		}
 	}
 
