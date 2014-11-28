@@ -5,6 +5,7 @@ import java.lang.ref.WeakReference;
 import org.bytedeco.javacpp.Loader;
 import org.bytedeco.javacpp.opencv_calib3d;
 import org.bytedeco.javacpp.opencv_core;
+import org.bytedeco.javacpp.opencv_core.CvFileStorage;
 import org.bytedeco.javacpp.opencv_core.CvScalar;
 import org.bytedeco.javacpp.opencv_core.IplImage;
 import org.bytedeco.javacpp.opencv_core.Mat;
@@ -12,6 +13,7 @@ import org.bytedeco.javacpp.opencv_features2d;
 import org.bytedeco.javacpp.opencv_features2d.DMatchVectorVector;
 import org.bytedeco.javacpp.opencv_features2d.FlannBasedMatcher;
 import org.bytedeco.javacpp.opencv_features2d.KeyPoint;
+import org.bytedeco.javacpp.opencv_ml.CvSVM;
 import org.bytedeco.javacpp.opencv_nonfree;
 import org.bytedeco.javacpp.opencv_nonfree.SIFT;
 import org.bytedeco.javacv.JavaCV;
@@ -21,21 +23,24 @@ import android.graphics.Bitmap.Config;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.TextView;
 
-public class ObjectRecognitionTask extends AsyncTask<Bitmap, Void, Bitmap> {
+public class ObjectRecognitionTask extends AsyncTask<Bitmap, Void, String> {
 	Bitmap object;
 	Bitmap scene;
 	
-	private final WeakReference<ImageView> imageViewReference;
+	private final WeakReference<TextView> imageViewReference;
+	Mat vocabulary;
 	
-	public ObjectRecognitionTask(ImageView imageView) {
-		imageViewReference = new WeakReference<ImageView>(imageView);
+	public ObjectRecognitionTask(TextView imageView, String pathToVocabulary, String [] classifiers) {
+		imageViewReference = new WeakReference<TextView>(imageView);
+		CvSVM classifier = new CvSVM();
+		classifier.load(arg0)
 	}
 
 	@Override
-	protected Bitmap doInBackground(Bitmap... arg0) {
+	protected String doInBackground(Bitmap... arg0) {
 		object = arg0[0];
-		scene = arg0[1];
 		
 		
 		Loader.load(opencv_core.class);
