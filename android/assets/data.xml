@@ -24,5 +24,33 @@
 	        <name>Railway Station</name>
 	        <description>This is the railway station of Astana. Here, you can buy tickets and go by train to many destinations, not only within Kazakhstan but to other countries too.</description>
 	    </place>
+	    
+	    <place id = "nuniversity">
+	        <name>Nazarbayev University</name>
+	        <description>Nazarbayev University is an autonomous research university located in Astana, the national capital of Kazakhstan. Founded as a result of the personal initiative of the President of Kazakhstan, Nursultan Nazarbayev, it is an English-medium institution, with an international faculty and staff. The acceptance rate for undergraduate programs is 1:8.5. All undergraduate students attend the university free of charge, and students in good standing receive a stipend, while the faculty-to-student class ratio is 1:9.
+
+				Nazarbayev University is legally linked to both the Nazarbayev Intellectual Schools and the Nazarbayev Endowment Fund, all of which are dedicated to promoting educational reform in Kazakhstan.</description>
+	    </place>
+	    
+	    <place id = "pyramid">
+	        <name>Palace of Peace and Reconciliation</name>
+	        <description>The Palace of Peace and Reconciliation was designed by the British architects Foster and Partners (lead design). Turkish architectural firm Tabanlıoğlu Architects undertook construction information packages for the Foster design and engineers Buro Happold undertook lead structural and services design. The Foster team was led by architects Nigel Dancey, Peter Ridley and Lee Hallman. Sembol Construction undertook a Design and Build contract, and were ultimately responsible for the final details and finishes, some of which varied considerably from the Foster and Tabanlıoğlu (Tabanlioglu) intent. Auditorium and performance equipment design was by Anne Minors Performance Consultants and acoustics by Sound Space Design.</description>
+	    </place>
+	    
+	    <place id = "hanshatyr">
+	        <name>Khan Shatyr Entertainment Center</name>
+	        <description>The 150m-high (500 ft) tent has a 200m elliptical base covering 140,000 square metres (14 ha; 35 acres).[2] Underneath the tent, an area larger than 10 football stadiums, is an urban-scale internal park, shopping and entertainment venue with squares and cobbled streets, a boating river, shopping centre, minigolf and indoor beach resort. The fabric roof is constructed from ETFE-cushions provided by Vector Foiltec suspended on a network of cables strung from a central spire. The transparent material allows sunlight through which, in conjunction with air heating and cooling systems, is designed to maintain an internal temperature between 15–30 °C (59–86 °F) in the main space and 19–24 °C (66–75 °F) in the retail units, while outside the temperature varies between −35 and 35 °C (−31 and 95 °F) across the year.</description>
+	    </place>
+	    
+	    <place id = "defence">
+	        <name>Ministry of defense of Republic of Kazakhstan</name>
+	        <description>This is it. Nothing special. =)</description>
+	    </place>
+	    
+	    <place id = "keruyen">
+	        <name>Keruyen</name>
+	        <description>Shopping mall.</description>
+	    </place>
+	    
     </places>
 </placelist>

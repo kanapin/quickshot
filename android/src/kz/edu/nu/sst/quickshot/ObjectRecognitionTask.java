@@ -21,12 +21,16 @@ public class ObjectRecognitionTask extends AsyncTask<String, Void, String> {
 
 	// Load classifiers and vocabulary to the memory
 	public ObjectRecognitionTask(TextView imageView) {
-		instance = OpenCVTool.getInstance();
 		textViewReference = new WeakReference<TextView>(imageView);
 	}
 
 	@Override
 	protected String doInBackground(String... arg0) {
+		// Wait until singleton instance of OpenCVTool is initialized ...
+		while (!OpenCVTool.isInitialized())
+			;
+		// Not proceed to recognition
+		instance = OpenCVTool.getInstance();
 		Log.d("RecognitionTask", "Started");
 		Bitmap bitmapImage = OpenCVTool.decodeSampledBitmapFromFile(arg0[0],
 				WORKING_WIDTH, WORKING_HEIGHT);
@@ -87,7 +91,7 @@ public class ObjectRecognitionTask extends AsyncTask<String, Void, String> {
 		}
 		TextView view = textViewReference.get();
 		if (place != null && view != null)
-			view.setText(place.getDescription());
+			view.setText(place.getName() + "\n" + place.getDescription());
 	}
 
 }

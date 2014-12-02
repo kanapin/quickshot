@@ -1,11 +1,8 @@
 package kz.edu.nu.sst.quickshot;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 import org.simpleframework.xml.core.Persister;
 
@@ -26,7 +23,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
@@ -40,77 +36,6 @@ public class MainActivity extends Activity {
 
 	TextView tv;
 	static PlaceList placeList = null;
-
-	public void initOpenCV() {
-		if (OpenCVTool.initialized)
-			return;
-		String[] classNames = new String[] { "congresshall", "shabyt",
-				"vokzal", "hanshatyr", "triumf", "baiterek", "pyramid",
-				"keruyen", "defence", "nuniversity" };
-
-		PlaceCV[] places = new PlaceCV[classNames.length];
-
-		byte[] buffer = new byte[1024];
-
-		String pathToVocabulary = null;
-		InputStream inputStream;
-		OutputStream outputStream = null;
-		try {
-			inputStream = this.getAssets().open("vocabulary.yml");
-			File vocabularyFile = createTemproraryFile("vocabulary", "yml");
-			outputStream = new BufferedOutputStream(new FileOutputStream(
-					vocabularyFile));
-			pathToVocabulary = vocabularyFile.getAbsolutePath();
-			int length = 0;
-			try {
-				while ((length = inputStream.read(buffer)) > 0) {
-					outputStream.write(buffer, 0, length);
-				}
-			} catch (IOException ioe) {
-				/* ignore */
-			}
-
-		} catch (IOException e2) {
-			e2.printStackTrace();
-		} finally {
-			if (outputStream != null) {
-				try {
-					outputStream.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-
-		for (int i = 0; i < classNames.length; i++) {
-			Log.d("MainActivity", "i = " + i);
-			int length = 0;
-			try {
-				inputStream = getAssets().open(classNames[i] + ".xml");
-
-				File currentFile = createTemproraryFile(classNames[i], "xml");
-				places[i] = new PlaceCV(classNames[i],
-						currentFile.getAbsolutePath());
-
-				outputStream = new BufferedOutputStream(new FileOutputStream(
-						currentFile));
-				while ((length = inputStream.read(buffer)) > 0) {
-					outputStream.write(buffer, 0, length);
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				if (outputStream != null)
-					try {
-						outputStream.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-			}
-		}
-
-		OpenCVTool.initializePlacesForTraining(places, pathToVocabulary);
-	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -164,10 +89,12 @@ public class MainActivity extends Activity {
 			e.printStackTrace();
 		}
 
-		initOpenCV();
-		Toast toast = Toast.makeText(getApplicationContext(),
-				"OpenCV tools were inited", Toast.LENGTH_SHORT);
-		toast.show();
+		//initOpenCV();
+		OpenCVInit init = new OpenCVInit(getApplicationContext());
+		
+		new Thread(init).start();
+		
+		
 	}
 
 	private File createTemproraryFile(String part, String ext)

@@ -24,7 +24,14 @@ public class OpenCVTool {
 	final FlannBasedMatcher matcher;
 	final BOWImgDescriptorExtractor bowide;
 	
-	public static boolean initialized = false;
+	private static boolean initialized = false;
+	
+	synchronized static boolean isInitialized() {
+		return initialized;
+	}
+	synchronized static void setInitState(boolean inited) {
+		initialized = inited;
+	}
 	
 	private static OpenCVTool instance;
 	
@@ -59,7 +66,7 @@ public class OpenCVTool {
 	
 	public static void initializePlacesForTraining(PlaceCV [] _places, String _pathToVocabulary) {
 		instance = new OpenCVTool(_places, _pathToVocabulary);
-		initialized = true;
+		setInitState(true);
 	}
 	public static OpenCVTool getInstance() {
 		if (instance == null) 
