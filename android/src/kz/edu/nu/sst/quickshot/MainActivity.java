@@ -13,6 +13,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -23,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,39 +36,40 @@ public class MainActivity extends Activity {
 	Bitmap image;
 	Uri mImageUri1;
 	TextView textView;
-
+	LinearLayout layout;
 
 	TextView tv;
-	PlaceList placeList = null;
+	static PlaceList placeList = null;
 
-	
 	public void initOpenCV() {
 		if (OpenCVTool.initialized)
 			return;
-		String [] classNames = new String [] {"congresshall", "shabyt", "vokzal", "hanshatyr", "triumf",
-                "baiterek", "pyramid", "keruyen", "defence", "nuniversity"};
-		
-		PlaceCV [] places = new PlaceCV [classNames.length];
-		
+		String[] classNames = new String[] { "congresshall", "shabyt",
+				"vokzal", "hanshatyr", "triumf", "baiterek", "pyramid",
+				"keruyen", "defence", "nuniversity" };
+
+		PlaceCV[] places = new PlaceCV[classNames.length];
+
 		byte[] buffer = new byte[1024];
-		
+
 		String pathToVocabulary = null;
-		InputStream inputStream ;
-		OutputStream outputStream = null ;
+		InputStream inputStream;
+		OutputStream outputStream = null;
 		try {
 			inputStream = this.getAssets().open("vocabulary.yml");
 			File vocabularyFile = createTemproraryFile("vocabulary", "yml");
-			outputStream = new BufferedOutputStream(new FileOutputStream(vocabularyFile)); 
+			outputStream = new BufferedOutputStream(new FileOutputStream(
+					vocabularyFile));
 			pathToVocabulary = vocabularyFile.getAbsolutePath();
-	        int length = 0;
-	        try {
-	            while ((length = inputStream.read(buffer)) > 0){
-	                outputStream.write(buffer, 0, length);
-	            }
-	        } catch (IOException ioe) {
-	            /* ignore */		
-	        }
-			
+			int length = 0;
+			try {
+				while ((length = inputStream.read(buffer)) > 0) {
+					outputStream.write(buffer, 0, length);
+				}
+			} catch (IOException ioe) {
+				/* ignore */
+			}
+
 		} catch (IOException e2) {
 			e2.printStackTrace();
 		} finally {
@@ -74,40 +77,38 @@ public class MainActivity extends Activity {
 				try {
 					outputStream.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 		}
-		
-		for (int i = 0 ; i < classNames.length ; i ++) {
+
+		for (int i = 0; i < classNames.length; i++) {
 			Log.d("MainActivity", "i = " + i);
 			int length = 0;
 			try {
 				inputStream = getAssets().open(classNames[i] + ".xml");
 
 				File currentFile = createTemproraryFile(classNames[i], "xml");
-				places[i] = new PlaceCV(classNames[i], currentFile.getAbsolutePath());
-				
+				places[i] = new PlaceCV(classNames[i],
+						currentFile.getAbsolutePath());
+
 				outputStream = new BufferedOutputStream(new FileOutputStream(
 						currentFile));
 				while ((length = inputStream.read(buffer)) > 0) {
 					outputStream.write(buffer, 0, length);
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} finally {
 				if (outputStream != null)
 					try {
 						outputStream.close();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 			}
 		}
-		
+
 		OpenCVTool.initializePlacesForTraining(places, pathToVocabulary);
 	}
 
@@ -143,8 +144,12 @@ public class MainActivity extends Activity {
 			}
 		});
 		textView = (TextView) findViewById(R.id.textView1);
-		
-		
+		Typeface type = Typeface.createFromAsset(getAssets(),
+				"Kingthings Exeter.ttf");
+		textView.setTypeface(type);
+		imageButton.setTypeface(type);
+		layout = (LinearLayout) findViewById(R.id.layout1);
+		layout.setBackgroundResource(R.drawable.pic4);
 
 		InputStream in = null;
 		try {
@@ -156,17 +161,18 @@ public class MainActivity extends Activity {
 		try {
 			placeList = serializer.read(PlaceList.class, in, false);
 		} catch (Exception e) {
-			e.printStackTrace();			
+			e.printStackTrace();
 		}
 
 		initOpenCV();
-		Toast toast = Toast.makeText(getApplicationContext(), "OpenCV tools were inited", Toast.LENGTH_SHORT);
+		Toast toast = Toast.makeText(getApplicationContext(),
+				"OpenCV tools were inited", Toast.LENGTH_SHORT);
 		toast.show();
 	}
 
 	private File createTemproraryFile(String part, String ext)
 			throws IOException {
-		File tempDir = Environment.getExternalStorageDirectory();		
+		File tempDir = Environment.getExternalStorageDirectory();
 		tempDir = new File(tempDir.getAbsolutePath() + "/.temp");
 		if (!tempDir.exists()) {
 			tempDir.mkdir();
@@ -196,32 +202,18 @@ public class MainActivity extends Activity {
 
 			Bitmap photo;
 
-			photo = OpenCVTool.decodeSampledBitmapFromFile(mImageUri1.getPath(), 480, 640);
+			photo = OpenCVTool.decodeSampledBitmapFromFile(
+					mImageUri1.getPath(), 480, 640);
 			Log.d("RESULT", "Path = " + mImageUri1.getPath());
 			image = photo;
 			imageView.setImageBitmap(photo);
-			
+
 			/********** for testing purposes *************/
-			//displayResults("shabyt");
+			// displayResults("shabyt");
 			/*********************************************/
 			ObjectRecognitionTask task = new ObjectRecognitionTask(textView);
 			task.execute(mImageUri1.getPath());
 		}
 	}
 
-	
-
-	public void displayResults(String id) {
-		Place place = null;
-
-		for (Place p : placeList.getList()) {
-			if (p.getId().equals(id)) {
-				place = p;
-				break;
-			}
-		}
-		tv = (TextView) findViewById(R.id.textView1);
-		if (place != null)
-			tv.setText(place.getDescription());
-	}
 }
