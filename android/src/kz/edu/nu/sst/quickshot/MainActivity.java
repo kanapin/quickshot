@@ -7,10 +7,14 @@ import java.io.InputStream;
 import org.simpleframework.xml.core.Persister;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Typeface;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -36,6 +40,7 @@ public class MainActivity extends Activity {
 
 	TextView tv;
 	static PlaceList placeList = null;
+	private LocationManager locationManager;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -76,25 +81,11 @@ public class MainActivity extends Activity {
 		layout = (LinearLayout) findViewById(R.id.layout1);
 		layout.setBackgroundResource(R.drawable.pic4);
 
-		InputStream in = null;
-		try {
-			in = this.getAssets().open("data.xml");
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-		Persister serializer = new Persister();
-		try {
-			placeList = serializer.read(PlaceList.class, in, false);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		//initOpenCV();
+		// initOpenCV();
 		OpenCVInit init = new OpenCVInit(getApplicationContext());
-		
+		getNearestBuildings();
 		new Thread(init).start();
-		
-		
+
 	}
 
 	private File createTemproraryFile(String part, String ext)
@@ -135,12 +126,69 @@ public class MainActivity extends Activity {
 			image = photo;
 			imageView.setImageBitmap(photo);
 
-			/********** for testing purposes *************/
-			// displayResults("shabyt");
-			/*********************************************/
 			ObjectRecognitionTask task = new ObjectRecognitionTask(textView);
 			task.execute(mImageUri1.getPath());
 		}
 	}
+
+	private void getNearestBuildings() {
+		InputStream in = null;
+		PlaceList list = null;
+		placeList = new PlaceList();
+		try {
+			in = this.getAssets().open("data.xml");
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		Persister serializer = new Persister();
+		try {
+			list = serializer.read(PlaceList.class, in, false);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+				10000, 10, listener);
+
+		Location location = locationManager
+				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		for (Place p : list.getList()) {
+			if (getDistance(location.getLatitude(), location.getLongitude(),
+					p.getLatitude(), p.getLongitude()) < 1000) {
+				placeList.getList().add(p);
+				System.out.println("FOUND!!!!!!!" + p.getName());
+			}
+		}
+
+	}
+
+	double getDistance(double lat1, double lon1, double lat2, double lon2) {
+		int R = 6378100; // radius
+		double dLat = (lat2 - lat1) * (Math.PI / 180);
+		double dLon = (lon2 - lon1) * (Math.PI / 180);
+		double a = (Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1
+				* (Math.PI / 180))
+				* Math.cos(lat2 * (Math.PI / 180))
+				* Math.sin(dLon / 2)
+				* Math.sin(dLon / 2));
+		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		double d = R * c;
+		return d;
+	}
+
+	private LocationListener listener = new LocationListener() {
+		public void onLocationChanged(Location location) {
+		}
+
+		public void onStatusChanged(String provider, int status, Bundle extras) {
+		}
+
+		public void onProviderEnabled(String provider) {
+		}
+
+		public void onProviderDisabled(String provider) {
+		}
+	};
 
 }

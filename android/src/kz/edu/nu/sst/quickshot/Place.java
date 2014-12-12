@@ -13,6 +13,10 @@ public class Place {
 	private String name;
 	@Element
 	private String description;
+	@Element
+	private double latitude;
+	@Element
+	private double longitude;
 
 	public void setId(String id) {
 		this.id = id;
@@ -26,6 +30,14 @@ public class Place {
 		this.description = description;
 	}
 
+	public void setLatitude(float latitude) {
+		this.latitude = latitude;
+	}
+
+	public void setLongitude(float longitude) {
+		this.longitude = longitude;
+	}
+
 	public String getId() {
 		return id;
 	}
@@ -36,6 +48,14 @@ public class Place {
 
 	public String getDescription() {
 		return description;
+	}
+
+	public double getLatitude() {
+		return latitude;
+	}
+
+	public double getLongitude() {
+		return longitude;
 	}
 
 }
