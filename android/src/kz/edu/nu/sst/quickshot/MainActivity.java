@@ -50,6 +50,7 @@ public class MainActivity extends Activity {
 	public static MenuItem menuItem;
 	static PlaceList placeList = null;
 	static Button infoBtn;
+	ObjectRecognitionTask task;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +70,7 @@ public class MainActivity extends Activity {
 				textView.setText("");
 				infoBtn.setEnabled(false);
 				spin = new ProgressBar(MainActivity.this);
-				
+
 				Intent cameraIntent = new Intent(
 						android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
 				File photo;
@@ -87,17 +88,16 @@ public class MainActivity extends Activity {
 
 			}
 		});
-		
-		infoBtn.setOnClickListener(new OnClickListener(){
+
+		infoBtn.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				PlacesService service = new PlacesService();
-//				service.getPlace(ref)
+				(new GetRating()).execute();
 			}
-			
-		});	
-		
+
+		});
+
 		textView = (TextView) findViewById(R.id.textView1);
 		Typeface type = Typeface.createFromAsset(getAssets(),
 				"Kingthings Exeter.ttf");
@@ -154,8 +154,10 @@ public class MainActivity extends Activity {
 			image = photo;
 			imageView.setImageBitmap(photo);
 
-			ObjectRecognitionTask task = new ObjectRecognitionTask(textView, getResources(), imageView, getPackageName());
+			task = new ObjectRecognitionTask(textView, getResources(),
+					imageView, getPackageName());
 			task.execute(mImageUri1.getPath());
+
 		}
 	}
 
@@ -183,7 +185,6 @@ public class MainActivity extends Activity {
 			}
 		}
 
-		
 		// initOpenCV();
 		OpenCVInit init = new OpenCVInit(getApplicationContext(),
 				placeList.getList());
@@ -254,6 +255,31 @@ public class MainActivity extends Activity {
 
 		@Override
 		public void onProviderDisabled(String provider) {
+		}
+
+	}
+
+	public class GetRating extends AsyncTask<String, Integer, String> {
+		PlacesService service;
+		String rating="";
+
+		@Override
+		protected void onPreExecute() {
+			service = new PlacesService();
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			Toast.makeText(MainActivity.this, "The rating is " + rating,
+					Toast.LENGTH_SHORT).show();
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			if (task.getPlace() != null) {
+				rating = service.getPlaceRating(task.getPlace().getReference());
+			}
+			return null;
 		}
 
 	}

@@ -38,16 +38,14 @@ public class PlacesService {
 		return content.toString();
 	}
 
-	public double getPlaceRatingFromJSON(JSONObject object) {
+	public String getPlaceRatingFromJSON(JSONObject object) {
 
-		Place place = new Place();
-		double rating = 0;
+		String rating = "";
 		try {
 			if (!object.isNull("result")) {
 				JSONObject res = object.getJSONObject("result");
-
 				if (!res.isNull("rating"))
-					rating = object.getJSONObject("result").getDouble("rating");
+					rating = object.getJSONObject("result").getString("rating");
 			}
 
 		} catch (JSONException e) {
@@ -57,7 +55,7 @@ public class PlacesService {
 		return rating;
 	}
 
-	public double getPlace(String ref) {
+	public String getPlaceRating(String ref) {
 
 		StringBuilder urlString = new StringBuilder(
 				"https://maps.googleapis.com/maps/api/place/details/json?reference=");
@@ -65,7 +63,7 @@ public class PlacesService {
 		urlString.append("&sensor=true&key=" + API_KEY);
 		String link = urlString.toString();
 		String json = getJSON(link);
-		double rating = 0;
+		String rating = "";
 		try {
 			JSONObject object = new JSONObject(json);
 			rating = getPlaceRatingFromJSON(object);
@@ -73,7 +71,6 @@ public class PlacesService {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-
 		return rating;
 	}
 
