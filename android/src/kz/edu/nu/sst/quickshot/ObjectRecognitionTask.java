@@ -10,6 +10,7 @@ import org.bytedeco.javacpp.opencv_features2d.KeyPoint;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 public class ObjectRecognitionTask extends AsyncTask<String, Void, String> {
@@ -25,6 +26,11 @@ public class ObjectRecognitionTask extends AsyncTask<String, Void, String> {
 	}
 
 	@Override
+	protected void onPreExecute() {
+		MainActivity.menuItem.setActionView(MainActivity.spin);
+	}
+
+	@Override
 	protected String doInBackground(String... arg0) {
 		// Wait until singleton instance of OpenCVTool is initialized ...
 		while (!OpenCVTool.isInitialized()) {
@@ -33,12 +39,11 @@ public class ObjectRecognitionTask extends AsyncTask<String, Void, String> {
 		// Not proceed to recognition
 		instance = OpenCVTool.getInstance();
 		Log.d("RecognitionTask", "Started");
-		
+
 		// Loading scaled image
 		Bitmap bitmapImage = OpenCVTool.decodeSampledBitmapFromFile(arg0[0],
 				WORKING_WIDTH, WORKING_HEIGHT);
 
-		
 		int w = bitmapImage.getWidth(), h = bitmapImage.getHeight();
 
 		Log.d("RecognitionTask", "w, h = " + w + ", " + h);
@@ -81,6 +86,7 @@ public class ObjectRecognitionTask extends AsyncTask<String, Void, String> {
 
 	@Override
 	protected void onPostExecute(String s) {
+		MainActivity.menuItem.setActionView(null);
 		displayResults(s);
 	}
 
