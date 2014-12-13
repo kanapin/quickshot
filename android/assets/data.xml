@@ -1,6 +1,6 @@
 <placelist name="astana">
     <places>
-	    <place id = "shatyr">        
+	    <place id = "hanshatyr">        
 	        <name>Khan Shatyr</name>
 	        <description>Khan Shatyr Shopping and Entertainment Center is a new symbol of the capital of Kazakhstan, the first and the Only Lifestyle center in Astana that features world class shopping and entertainment under the same roof. Designed by famous British Architect, Lord Norman Foster, Khan Shatyr is the biggest tent in the world and also is the biggest shopping center in Kazakhstan. The main idea of Khan Shatyr is to create an atmosphere of comfort and antidote to the stress of daily life with the variety of greenery and fresh flowers. “Khan Shatyr” is located on the New Astana Center Axis which is also called “the Millennium Axis” with magnificent views of the Presidential Palace. On weekends the number of visitors reaches 30,000 people per day. Many world brands as Zara, New Yorker,Massimo Dutti, GAP, Bershka etc. represented in Astana for the first time. The sand of the beach has been flown out from the Maldives and under floor heating gives the natural beach feeling when walking on the sand.Khan Shatyr organizes different events on weekends, conducts lotteries and arranges various activities for guests in the central area called the atrium.</description>
 	        <latitude>51.132614</latitude>
@@ -54,8 +54,9 @@
 	  	<place id = "bayterek">
 	        <name>Bayterek</name>
 	        <description>Bayterek, is a monument and observation tower in Astana, Kazakhstan. A tourist attraction popular with foreign visitors and native Kazakhs alike, it is emblematic of the city, which became capital of the country in 1997.</description>
-			<latitude>51.132111</latitude>
-		    <longitude>71.436463</longitude>
+
+			<latitude>51.128584</latitude>
+		    <longitude>71.430543</longitude>
 	    </place> 
 	    
 	    <place id = "defence">
