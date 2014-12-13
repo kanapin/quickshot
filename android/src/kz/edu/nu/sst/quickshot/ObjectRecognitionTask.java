@@ -100,8 +100,12 @@ public class ObjectRecognitionTask extends AsyncTask<String, Void, String> {
 			}
 		}
 		TextView view = textViewReference.get();
-		if (place != null && view != null)
+		if (place != null && view != null) {
 			view.setText(place.getName() + "\n" + place.getDescription());
+			if (!place.getReference().equals("null")) {
+				MainActivity.infoBtn.setEnabled(true);
+			}
+		}
 	}
 
 }
