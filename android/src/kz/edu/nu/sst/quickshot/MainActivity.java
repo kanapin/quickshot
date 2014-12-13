@@ -83,11 +83,8 @@ public class MainActivity extends Activity {
 		layout = (LinearLayout) findViewById(R.id.layout1);
 		layout.setBackgroundResource(R.drawable.pic4);
 
-		// initOpenCV();
-		OpenCVInit init = new OpenCVInit(getApplicationContext());
 		FindLocation task = new FindLocation();
 		task.execute();
-		new Thread(init).start();
 
 	}
 
@@ -157,6 +154,10 @@ public class MainActivity extends Activity {
 				System.out.println("FOUND!!!!!!!" + p.getName());
 			}
 		}
+
+		// initOpenCV();
+		OpenCVInit init = new OpenCVInit(getApplicationContext());
+		new Thread(init).start();
 	}
 
 	double getDistance(double lat1, double lon1, double lat2, double lon2) {
