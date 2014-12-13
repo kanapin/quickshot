@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 
 import android.content.Context;
 import android.os.Environment;
@@ -17,18 +18,22 @@ public class OpenCVInit implements Runnable {
 	
 	String [] classNames;
 	PlaceCV [] places;
+	ArrayList<Place> nearestPlacesList;
 	
-	public OpenCVInit(Context context) {
+	public OpenCVInit(Context context, ArrayList<Place> placeList) {
 		if (OpenCVTool.isInitialized())
 			return;
 		
 		this.context = context;
-		classNames = new String[] { "congresshall", "shabyt",
-				"vokzal", "hanshatyr", "triumf", "baiterek", "pyramid",
-				"keruyen", "defence", "nuniversity" };
-
+		
+		
+		this.nearestPlacesList = placeList;
+		classNames = new String [nearestPlacesList.size()];
+		for (int i = 0 ; i < nearestPlacesList.size() ; i ++) {
+			classNames[i] = nearestPlacesList.get(i).getId();
+		}
+		
 		places = new PlaceCV[classNames.length];
-
 		
 	}
 	private File createTemproraryFile(String part, String ext)

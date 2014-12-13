@@ -1,7 +1,6 @@
 package kz.edu.nu.sst.quickshot;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.ElementList;
@@ -11,7 +10,7 @@ import org.simpleframework.xml.Root;
 public class PlaceList {
 
 	@ElementList(type = Place.class)
-	private List<Place> places = new ArrayList<Place>();
+	private ArrayList<Place> places = new ArrayList<Place>();
 
 	@Attribute
 	private String name;
@@ -20,11 +19,11 @@ public class PlaceList {
 		return name;
 	}
 
-	public List<Place> getList() {
+	public ArrayList<Place> getList() {
 		return places;
 	}
 
-	public void setList(List<Place> places) {
+	public void setList(ArrayList<Place> places) {
 		this.places = places;
 	}
 

@@ -138,7 +138,7 @@ void buildVocabulary(string listFileName) {
         
         std::string cur_class_name = imageFileName.substr(0, index);
         
-        imageFileName = "images/" + imageFileName;
+        imageFileName = "all_images/" + imageFileName;
         std::cout << "Processing " << imageFileName << std::endl;
         
         input = imread(imageFileName.c_str(), CV_LOAD_IMAGE_GRAYSCALE);
@@ -211,17 +211,17 @@ void testClassifiers(string testImageListFileName) {
         
         input = imread(("test-images/" + testImageName).c_str(), CV_LOAD_IMAGE_GRAYSCALE);
         
-        std::cout << "Loaded " + testImageName << input.rows << " x " << input.cols << std::endl;
+        //std::cout << "Loaded " + testImageName << input.rows << " x " << input.cols << std::endl;
         totalTestCases ++;
         
         string actualClassName = testImageName.substr(0, testImageName.find('_'));
         
         detector.detect(input, keypoints);
-        std::cout << "Found " << keypoints.size() << " keypoints\n";
+        //std::cout << "Found " << keypoints.size() << " keypoints\n";
         //extractor->compute(input, keypoints, descriptor);
         
         bowide.compute(input, keypoints, response_hist);
-        std::cout << "Response hist " << response_hist.cols << std::endl;
+        //std::cout << "Response hist " << response_hist.cols << std::endl;
         
 
         float minf = FLT_MAX;
@@ -236,6 +236,9 @@ void testClassifiers(string testImageListFileName) {
         std::cout << testImageName << " is " << bestMatch << std::endl;
         if (actualClassName == bestMatch)
             correct ++;
+        else {
+            std::cout << actualClassName << " != " << bestMatch << std::endl;
+        }
     }
     testImageListFile.close();
     
@@ -249,8 +252,12 @@ int main(int argc, char* argv[]) {
         return 0;
     }
     
-    buildVocabulary(argv[1]);
-    trainImages(argv[2]);
+    std::cout << "Program takes vocabulary images from /all_images ;\n"
+         << "training images from /images ;\n"
+         << "testing images from /test-images ;\n";
+    
+    //buildVocabulary(argv[1]);
+    //trainImages(argv[2]);
     testClassifiers(argv[3]);
     
     

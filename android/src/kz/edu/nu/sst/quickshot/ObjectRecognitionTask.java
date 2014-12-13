@@ -27,16 +27,18 @@ public class ObjectRecognitionTask extends AsyncTask<String, Void, String> {
 	@Override
 	protected String doInBackground(String... arg0) {
 		// Wait until singleton instance of OpenCVTool is initialized ...
-		while (!OpenCVTool.isInitialized())
-			;
+		while (!OpenCVTool.isInitialized()) {
+			// Busy waiting
+		}
 		// Not proceed to recognition
 		instance = OpenCVTool.getInstance();
 		Log.d("RecognitionTask", "Started");
+		
+		// Loading scaled image
 		Bitmap bitmapImage = OpenCVTool.decodeSampledBitmapFromFile(arg0[0],
 				WORKING_WIDTH, WORKING_HEIGHT);
 
-		// IplImage image =
-		// org.bytedeco.javacpp.opencv_highgui.cvvLoadImage(arg0[0]);
+		
 		int w = bitmapImage.getWidth(), h = bitmapImage.getHeight();
 
 		Log.d("RecognitionTask", "w, h = " + w + ", " + h);
@@ -51,6 +53,7 @@ public class ObjectRecognitionTask extends AsyncTask<String, Void, String> {
 		org.bytedeco.javacpp.opencv_imgproc.cvCvtColor(initialImage, image,
 				org.bytedeco.javacpp.opencv_imgproc.CV_RGBA2BGR);
 
+		// Extracting keypoints
 		KeyPoint keypoints = new KeyPoint();
 
 		Mat input = new Mat(image);
@@ -59,11 +62,12 @@ public class ObjectRecognitionTask extends AsyncTask<String, Void, String> {
 		Mat response_hist = new Mat();
 
 		instance.bowide.compute(input, keypoints, response_hist);
-
+		// Finding best match
 		float minf = Float.MAX_VALUE;
 		String bestMatch = null;
 		for (int i = 0; i < instance.places.length; i++) {
 			float res = instance.classifiers[i].predict(response_hist, true);
+			Log.d("OPENCV", instance.places[i].className + " is " + res);
 			if (res < minf) {
 				minf = res;
 				bestMatch = instance.places[i].className;

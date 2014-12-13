@@ -54,8 +54,8 @@
 	  	<place id = "bayterek">
 	        <name>Bayterek</name>
 	        <description>Bayterek, is a monument and observation tower in Astana, Kazakhstan. A tourist attraction popular with foreign visitors and native Kazakhs alike, it is emblematic of the city, which became capital of the country in 1997.</description>
-			<latitude></latitude>
-		    <longitude></longitude>
+			<latitude>51.132111</latitude>
+		    <longitude>71.436463</longitude>
 	    </place> 
 	    
 	    <place id = "defence">
