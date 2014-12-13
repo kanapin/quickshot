@@ -156,7 +156,7 @@ public class MainActivity extends Activity {
 		}
 
 		// initOpenCV();
-		OpenCVInit init = new OpenCVInit(getApplicationContext());
+		OpenCVInit init = new OpenCVInit(getApplicationContext(), list.getList());
 		new Thread(init).start();
 	}
 
