@@ -128,7 +128,6 @@ public class MainActivity extends Activity {
 
 		menuItem = menu
 				.add(MENU_REFRESH, MENU_REFRESH, MENU_REFRESH, "Refresh");
-		menuItem.setIcon(R.drawable.abc_spinner_ab_default_holo_dark);
 		menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
 		return true;
@@ -155,7 +154,7 @@ public class MainActivity extends Activity {
 			image = photo;
 			imageView.setImageBitmap(photo);
 
-			ObjectRecognitionTask task = new ObjectRecognitionTask(textView);
+			ObjectRecognitionTask task = new ObjectRecognitionTask(textView, getResources(), imageView, getPackageName());
 			task.execute(mImageUri1.getPath());
 		}
 	}
