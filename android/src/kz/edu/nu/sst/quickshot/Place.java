@@ -17,6 +17,8 @@ public class Place {
 	private double latitude;
 	@Element
 	private double longitude;
+	@Element
+	private String reference;
 
 	public void setId(String id) {
 		this.id = id;
@@ -57,5 +59,14 @@ public class Place {
 	public double getLongitude() {
 		return longitude;
 	}
+
+	public String getReference() {
+		return reference;
+	}
+
+	public void setReference(String reference) {
+		this.reference = reference;
+	}
+	
 
 }

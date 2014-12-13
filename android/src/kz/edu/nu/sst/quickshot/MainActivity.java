@@ -25,6 +25,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -48,12 +49,14 @@ public class MainActivity extends Activity {
 	public static ProgressBar spin;
 	public static MenuItem menuItem;
 	static PlaceList placeList = null;
+	static Button infoBtn;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+		infoBtn = (Button) findViewById(R.id.button2);
+		infoBtn.setEnabled(false);
 		imageButton = (Button) findViewById(R.id.button1);
 		imageView = (ImageView) findViewById(R.id.imageView1);
 
@@ -63,6 +66,10 @@ public class MainActivity extends Activity {
 		imageButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				textView.setText("");
+				infoBtn.setEnabled(false);
+				spin = new ProgressBar(MainActivity.this);
+				
 				Intent cameraIntent = new Intent(
 						android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
 				File photo;
@@ -80,6 +87,17 @@ public class MainActivity extends Activity {
 
 			}
 		});
+		
+		infoBtn.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				PlacesService service = new PlacesService();
+//				service.getPlace(ref)
+			}
+			
+		});	
+		
 		textView = (TextView) findViewById(R.id.textView1);
 		Typeface type = Typeface.createFromAsset(getAssets(),
 				"Kingthings Exeter.ttf");
@@ -166,8 +184,7 @@ public class MainActivity extends Activity {
 			}
 		}
 
-		textView.setText("");
-		spin = new ProgressBar(this);
+		
 		// initOpenCV();
 		OpenCVInit init = new OpenCVInit(getApplicationContext(),
 				placeList.getList());
