@@ -51,12 +51,12 @@
 		    <longitude>71.463526</longitude>
 	    </place>
 	    
-	  <!--  <place id = "hanshatyr">
-	        <name>Khan Shatyr Entertainment Center</name>
-	        <description>The 150m-high (500 ft) tent has a 200m elliptical base covering 140,000 square metres (14 ha; 35 acres).[2] Underneath the tent, an area larger than 10 football stadiums, is an urban-scale internal park, shopping and entertainment venue with squares and cobbled streets, a boating river, shopping centre, minigolf and indoor beach resort. The fabric roof is constructed from ETFE-cushions provided by Vector Foiltec suspended on a network of cables strung from a central spire. The transparent material allows sunlight through which, in conjunction with air heating and cooling systems, is designed to maintain an internal temperature between 15–30 °C (59–86 °F) in the main space and 19–24 °C (66–75 °F) in the retail units, while outside the temperature varies between −35 and 35 °C (−31 and 95 °F) across the year.</description>
+	  	<place id = "bayterek">
+	        <name>Bayterek</name>
+	        <description>Bayterek, is a monument and observation tower in Astana, Kazakhstan. A tourist attraction popular with foreign visitors and native Kazakhs alike, it is emblematic of the city, which became capital of the country in 1997.</description>
 			<latitude></latitude>
 		    <longitude></longitude>
-	    </place> -->
+	    </place> 
 	    
 	    <place id = "defence">
 	        <name>Ministry of defense of Republic of Kazakhstan</name>
