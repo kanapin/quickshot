@@ -20,7 +20,6 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ImageView;
-import android.view.View;
 import android.widget.TextView;
 
 public class ObjectRecognitionTask extends AsyncTask<String, Void, String> {
@@ -73,24 +72,21 @@ public class ObjectRecognitionTask extends AsyncTask<String, Void, String> {
 		Log.d("RecognitionTask", "time for decoding = " + timeForDecoding);
 		
 
-		int w = bitmapImage.getWidth(), h = bitmapImage.getHeight();
-		Log.d("RecognitionTask", "w, h = " + w + ", " + h);
-		IplImage initialImage = IplImage.create(w, h, opencv_core.IPL_DEPTH_8U,
-				4);
+		IplImage initialImage = IplImage.create(bitmapImage.getWidth(), bitmapImage.getHeight(), opencv_core.IPL_DEPTH_8U,	4);
 		
 		
 		long timeConvert = System.currentTimeMillis();
 		bitmapImage.copyPixelsToBuffer(initialImage.getByteBuffer());
-		IplImage image = IplImage.create(w, h, opencv_core.IPL_DEPTH_8U, 3);
-		org.bytedeco.javacpp.opencv_imgproc.cvCvtColor(initialImage, image,
-				org.bytedeco.javacpp.opencv_imgproc.CV_RGBA2BGR);
+		IplImage sceneImageRGB = IplImage.create(bitmapImage.getWidth(), bitmapImage.getHeight(), opencv_core.IPL_DEPTH_8U, 3);
+		
+		org.bytedeco.javacpp.opencv_imgproc.cvCvtColor(initialImage, sceneImageRGB, org.bytedeco.javacpp.opencv_imgproc.CV_RGBA2RGB);
 		timeConvert = System.currentTimeMillis() - timeConvert;
 		Log.d("REC", "time for conversion: " + timeConvert);
 
 		long timeToExtract = System.currentTimeMillis();
 		// Extracting keypoints
 		KeyPoint keypoints = new KeyPoint();
-		Mat input = new Mat(image);
+		Mat input = new Mat(sceneImageRGB);
 		Mat inputDescriptors = new Mat();
 		instance.detector.detectAndCompute(input, Mat.EMPTY, keypoints, inputDescriptors);
 		Mat response_hist = new Mat();
@@ -121,20 +117,19 @@ public class ObjectRecognitionTask extends AsyncTask<String, Void, String> {
 		Log.d("REC", "time for the first = " + time);
 		time = System.currentTimeMillis();
 		
-		// TODO create map
-		
 		int id = res.getIdentifier(bestMatch, "raw", packageName);
 		Bitmap templateImageBitmap = decodeSampledBitmapFromResource(res, id, 500, 500);
 		
-		initialImage = IplImage.create(w, h, opencv_core.IPL_DEPTH_8U,	4);
-		templateImageBitmap.copyPixelsToBuffer(initialImage.getByteBuffer());
-
-		IplImage templateImage = IplImage.create(w, h, opencv_core.IPL_DEPTH_8U, 3);
-
-		org.bytedeco.javacpp.opencv_imgproc.cvCvtColor(initialImage, templateImage,
-				org.bytedeco.javacpp.opencv_imgproc.CV_RGBA2BGR);
 		
-		Mat templateMat = new Mat(templateImage);
+		IplImage initialTemplateImage = IplImage.create(templateImageBitmap.getWidth(), templateImageBitmap.getHeight(), opencv_core.IPL_DEPTH_8U,	4);
+		templateImageBitmap.copyPixelsToBuffer(initialTemplateImage.getByteBuffer());
+
+		IplImage templateImageRGB = IplImage.create(templateImageBitmap.getWidth(), templateImageBitmap.getHeight(), opencv_core.IPL_DEPTH_8U, 3);
+
+		org.bytedeco.javacpp.opencv_imgproc.cvCvtColor(initialTemplateImage, templateImageRGB,
+				org.bytedeco.javacpp.opencv_imgproc.CV_RGBA2RGB);
+		
+		Mat templateMat = new Mat(templateImageRGB);
 		KeyPoint templateKeypoints = new KeyPoint();
 		Mat templateDescriptors = new Mat();
 		
@@ -146,13 +141,12 @@ public class ObjectRecognitionTask extends AsyncTask<String, Void, String> {
 			Log.d("Rec", "Drawing");
 			
 			IplImage sceneImage = input.asIplImage();
-			newImage = Bitmap.createBitmap(sceneImage.width(), sceneImage.height(), Config.ARGB_4444);
-	        
 			org.bytedeco.javacpp.opencv_imgproc.cvCvtColor(sceneImage, initialImage, 
 					org.bytedeco.javacpp.opencv_imgproc.CV_RGB2RGBA);
-
-	        
+			
+			newImage = Bitmap.createBitmap(initialImage.width(), initialImage.height(), Config.ARGB_4444);
 	        newImage.copyPixelsFromBuffer(initialImage.getByteBuffer());
+	        
 		} else {
 			Log.d("Rec", "scene_corners is null!!!");
 			return null;
@@ -160,7 +154,6 @@ public class ObjectRecognitionTask extends AsyncTask<String, Void, String> {
 		time = System.currentTimeMillis() - time;
 		Log.d("REC", "time for the second = " + time);
 		
-		image.release();
 		return bestMatch;
 
 	}
@@ -168,7 +161,6 @@ public class ObjectRecognitionTask extends AsyncTask<String, Void, String> {
 			Mat sceneMat, KeyPoint sceneKeypoints, Mat sceneDescriptors) {
 		
 		
-		// TODO: FlannBasedMatcher
 		FlannBasedMatcher matcher = new FlannBasedMatcher();
 		
 		DMatchVectorVector matches12 = new DMatchVectorVector();
@@ -313,8 +305,6 @@ public class ObjectRecognitionTask extends AsyncTask<String, Void, String> {
 		opencv_features2d.DMatchVectorVector brandNewMatches = new opencv_features2d.DMatchVectorVector();
 		brandNewMatches.resize(newMatches.size());
 		for (int i = 0; i < newMatches.size(); i++) {
-			// TODO: Move this weights into params
-			// Since minDist may be equal to 0.0, add some non-zero value
 			if (newMatches.get(i, 0).distance() <= 3 * minDist) {
 				brandNewMatches.resize(sz, 1);
 				brandNewMatches.put(sz, 0, newMatches.get(i, 0));
