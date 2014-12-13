@@ -109,6 +109,8 @@ public class ObjectRecognizer implements Runnable {
 		
 		matches = refineMatches(matches);
 		
+		//TODO: if matches.size() < 4, no homography can be found
+		
 		Mat homography = getHomography(templateKeyPoints, sceneKeyPoints, matches);
 		
 		double corners[][] = new double [4][2];

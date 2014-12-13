@@ -55,7 +55,7 @@ public class OpenCVTool {
         	classifiers[i].load(places[i].absolutePathToClassifier);
         }
         
-        detector = new SIFT();
+        detector = new SIFT(0, 3, 0.04, 10, 2.0);
         matcher = new FlannBasedMatcher();
         
         bowide = new BOWImgDescriptorExtractor(detector.asDescriptorExtractor(), matcher);
