@@ -20,6 +20,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ImageView;
+import android.view.View;
 import android.widget.TextView;
 
 public class ObjectRecognitionTask extends AsyncTask<String, Void, String> {
@@ -50,6 +51,11 @@ public class ObjectRecognitionTask extends AsyncTask<String, Void, String> {
 	}
 
 	@Override
+	protected void onPreExecute() {
+		MainActivity.menuItem.setActionView(MainActivity.spin);
+	}
+
+	@Override
 	protected String doInBackground(String... arg0) {
 		// Wait until singleton instance of OpenCVTool is initialized ...
 		while (!OpenCVTool.isInitialized()) {
@@ -66,6 +72,7 @@ public class ObjectRecognitionTask extends AsyncTask<String, Void, String> {
 		timeForDecoding = System.currentTimeMillis() - timeForDecoding;
 		Log.d("RecognitionTask", "time for decoding = " + timeForDecoding);
 		
+
 		int w = bitmapImage.getWidth(), h = bitmapImage.getHeight();
 		Log.d("RecognitionTask", "w, h = " + w + ", " + h);
 		IplImage initialImage = IplImage.create(w, h, opencv_core.IPL_DEPTH_8U,
@@ -234,7 +241,7 @@ public class ObjectRecognitionTask extends AsyncTask<String, Void, String> {
 				}
 			}
 		}
-		
+		MainActivity.menuItem.setActionView(null);
 	}
 
 	public void displayResults(String id) {

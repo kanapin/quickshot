@@ -28,20 +28,25 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+//import android.support.v7.app.ActionBarActivity;
 
 public class MainActivity extends Activity {
 
 	protected static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE_1 = 100;
+	private static final int MENU_REFRESH = 10;
 	Button imageButton;
 	ImageView imageView;
 	Bitmap image;
 	Uri mImageUri1;
 	TextView textView;
 	LinearLayout layout;
-
 	TextView tv;
+	public static ProgressBar spin;
+	public static MenuItem menuItem;
 	static PlaceList placeList = null;
 
 	@Override
@@ -102,6 +107,12 @@ public class MainActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
+
+		menuItem = menu
+				.add(MENU_REFRESH, MENU_REFRESH, MENU_REFRESH, "Refresh");
+		menuItem.setIcon(R.drawable.abc_spinner_ab_default_holo_dark);
+		menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
 		return true;
 	}
 
@@ -155,8 +166,11 @@ public class MainActivity extends Activity {
 			}
 		}
 
+		textView.setText("");
+		spin = new ProgressBar(this);
 		// initOpenCV();
-		OpenCVInit init = new OpenCVInit(getApplicationContext(), list.getList());
+		OpenCVInit init = new OpenCVInit(getApplicationContext(),
+				placeList.getList());
 		new Thread(init).start();
 	}
 
