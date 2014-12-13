@@ -16,9 +16,11 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,6 +29,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
@@ -40,7 +43,6 @@ public class MainActivity extends Activity {
 
 	TextView tv;
 	static PlaceList placeList = null;
-	private LocationManager locationManager;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +85,8 @@ public class MainActivity extends Activity {
 
 		// initOpenCV();
 		OpenCVInit init = new OpenCVInit(getApplicationContext());
-		getNearestBuildings();
+		FindLocation task = new FindLocation();
+		task.execute();
 		new Thread(init).start();
 
 	}
@@ -131,7 +134,7 @@ public class MainActivity extends Activity {
 		}
 	}
 
-	private void getNearestBuildings() {
+	private void getNearestBuildings(Location location) {
 		InputStream in = null;
 		PlaceList list = null;
 		placeList = new PlaceList();
@@ -146,13 +149,7 @@ public class MainActivity extends Activity {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-				10000, 10, listener);
-
-		Location location = locationManager
-				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 		for (Place p : list.getList()) {
 			if (getDistance(location.getLatitude(), location.getLongitude(),
 					p.getLatitude(), p.getLongitude()) < 1000) {
@@ -160,7 +157,6 @@ public class MainActivity extends Activity {
 				System.out.println("FOUND!!!!!!!" + p.getName());
 			}
 		}
-
 	}
 
 	double getDistance(double lat1, double lon1, double lat2, double lon2) {
@@ -177,18 +173,57 @@ public class MainActivity extends Activity {
 		return d;
 	}
 
-	private LocationListener listener = new LocationListener() {
-		public void onLocationChanged(Location location) {
+	public class FindLocation extends AsyncTask<String, Integer, String>
+			implements LocationListener {
+
+		Location loc;
+		LocationManager locationManager;
+
+		@Override
+		protected void onPreExecute() {
+			locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+			if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+				locationManager.requestLocationUpdates(
+						LocationManager.NETWORK_PROVIDER, 0, 0, this);
+			} else {
+				Toast.makeText(
+						MainActivity.this,
+						"Could not find your location. Please turn on GPS and restart the app...",
+						Toast.LENGTH_LONG).show();
+				Intent intent = new Intent(
+						Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+				startActivity(intent);
+			}
 		}
 
+		@Override
+		protected void onPostExecute(String result) {
+			getNearestBuildings(loc);
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			while (loc == null) {
+			}
+			return null;
+		}
+
+		@Override
+		public void onLocationChanged(Location location) {
+			loc = location;
+		}
+
+		@Override
 		public void onStatusChanged(String provider, int status, Bundle extras) {
 		}
 
+		@Override
 		public void onProviderEnabled(String provider) {
 		}
 
+		@Override
 		public void onProviderDisabled(String provider) {
 		}
-	};
 
+	}
 }
